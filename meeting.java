@@ -6,10 +6,28 @@
 package javaapplication2;
 
 import java.awt.Rectangle;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
 import java.util.Vector;
+import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -22,6 +40,8 @@ public class MeetingFrame extends javax.swing.JFrame {
 	 */
 	public MeetingFrame() {
 		initComponents();
+		initVideo();
+		initTimer();
 	}
 
 	/**
@@ -77,12 +97,18 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jTimeRadio = new javax.swing.JRadioButton();
                 jDurationRadio = new javax.swing.JRadioButton();
                 jCountLabel = new javax.swing.JLabel();
+                jClockLabel = new javax.swing.JLabel();
+                jLabel19 = new javax.swing.JLabel();
+                jSeparator2 = new javax.swing.JSeparator();
+                jUpLabel = new javax.swing.JPanel();
+                jLabel20 = new javax.swing.JLabel();
+                jButton2 = new javax.swing.JButton();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
                 jTable1.setModel(new javax.swing.table.DefaultTableModel(
                         new Object [][] {
-                                {"2018-02-9", "12:30", "NanTong", "40", "Important meeting"},
+                                {"2019-01-10", "12:30", "NanTong", "40", "Important meeting"},
                                 {"2018-02-10", "11:30", "NanTong", "50", "yes"},
                                 {"2018-02-11", "9:30", "Yangzhout", "10", "no"},
                                 {"2018-02-12", "21:30", "nanjing", "20", "ok"},
@@ -254,39 +280,87 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jCountLabel.setForeground(new java.awt.Color(255, 0, 0));
                 jCountLabel.setText("There are n records!");
 
+                jClockLabel.setText("23:30:15");
+
+                jLabel19.setText("Time:");
+
+                jLabel20.setFont(new java.awt.Font("宋体", 1, 12)); // NOI18N
+                jLabel20.setForeground(new java.awt.Color(255, 0, 51));
+                jLabel20.setText("The time is up!");
+
+                jButton2.setText("OK");
+
+                javax.swing.GroupLayout jUpLabelLayout = new javax.swing.GroupLayout(jUpLabel);
+                jUpLabel.setLayout(jUpLabelLayout);
+                jUpLabelLayout.setHorizontalGroup(
+                        jUpLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jUpLabelLayout.createSequentialGroup()
+                                .addComponent(jLabel20)
+                                .addGap(2, 2, 2)
+                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                                .addContainerGap())
+                );
+                jUpLabelLayout.setVerticalGroup(
+                        jUpLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jUpLabelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jUpLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel20)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                );
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
                 getContentPane().setLayout(layout);
                 layout.setHorizontalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator1)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel18)
+                                .addGap(363, 363, 363))
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addContainerGap()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                                .addGap(24, 24, 24)
+                                                                .addContainerGap()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(jDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                                                         .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(jDurationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addGap(0, 0, Short.MAX_VALUE))))
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                                .addGap(24, 24, 24)
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(jTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addComponent(jDurationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                .addGap(0, 0, Short.MAX_VALUE))))
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(jLabel11)
+                                                                                .addGap(35, 35, 35)
+                                                                                .addComponent(jLocationLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                        .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(jLabel15)
+                                                                        .addComponent(jLabel10)))
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(jLabel11)
-                                                                .addGap(35, 35, 35)
-                                                                .addComponent(jLocationLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                        .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel15)
-                                                        .addComponent(jLabel10)))
+                                                                .addComponent(jButton1)
+                                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                                .addGap(18, 18, 18))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jClockLabel)
+                                                .addGap(57, 57, 57))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jButton1)
-                                                .addGap(0, 0, Short.MAX_VALUE)))
-                                .addGap(18, 18, 18)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jUpLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -354,16 +428,11 @@ public class MeetingFrame extends javax.swing.JFrame {
                                                 .addComponent(jLabel17)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(jCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(27, 27, 27))))
-                        .addComponent(jSeparator1)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(199, 199, 199)
-                                .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel18)
-                                .addGap(363, 363, 363))
+                                                .addGap(27, 27, 27))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(99, 99, 99)
+                                                .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE))))
                 );
                 layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,6 +444,10 @@ public class MeetingFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jClockLabel)
+                                                        .addComponent(jLabel19))
+                                                .addGap(18, 18, 18)
                                                 .addComponent(jLabel10)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -395,15 +468,21 @@ public class MeetingFrame extends javax.swing.JFrame {
                                                 .addComponent(jLabel15)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(27, 27, 27))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(11, 11, 11))
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jDelete))
-                                .addGap(36, 36, 36)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(canvas1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jDelete))
+                                                .addGap(36, 36, 36)
+                                                .addComponent(jDurationRadio)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(69, 69, 69)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                                 .addComponent(jLabel1)
@@ -436,18 +515,19 @@ public class MeetingFrame extends javax.swing.JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                                                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(7, 7, 7)
-                                                .addComponent(jLabel18))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jDurationRadio)
-                                                .addGap(0, 0, Short.MAX_VALUE))))
+                                                .addComponent(jLabel18))))
                         .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
+                                .addGap(272, 272, 272)
+                                .addComponent(jUpLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                 );
 
                 jHour.getAccessibleContext().setAccessibleDescription("");
                 jHour.getAccessibleContext().setAccessibleParent(null);
                 jCountLabel.setVisible(false);
+
+                jUpLabel.setVisible(false);
 
                 pack();
         }// </editor-fold>                        
@@ -632,9 +712,83 @@ public class MeetingFrame extends javax.swing.JFrame {
         }                                          
 
         private void jDurationRadioActionPerformed(java.awt.event.ActionEvent evt) {                                               
-                // TODO add your handling code here:
+                // TODO add your handling code here:		
         }                                              
+    public void initVideo(){
+        try { // 初始化闹钟声音
+            // only support wav
+            AudioInputStream ais = AudioSystem.getAudioInputStream(MeetingFrame.class.getResource(filePath));
+            //clip is frame number
+            clip = AudioSystem.getClip();
+            clip.open(ais);
+            ais.close();
+            //start from 1 if no specify
+            int loop = LOOP_COUNT <= 0 ? 1 : LOOP_COUNT;
+            final long totalFrames = ais.getFrameLength() * loop;
+            clip.addLineListener(new LineListener() {
+                @Override
+                public void update(LineEvent e) {
+                    // 当闹钟音乐播放结束时，自动隐藏顶部提示栏
+                    if(e.getFramePosition() >= totalFrames) {
+                        stopAlarm();
+                    }
+                }
+            });
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
 
+    }
+    public void initTimer(){
+        timer = new Timer(); // 初始化倒计时任务
+        // 开始倒计时
+        timer.scheduleAtFixedRate(new TimerTask() {
+            //TODO realize the left inital codes here.
+		@Override
+            public void run() {
+                Calendar cal = Calendar.getInstance();
+                int hour = cal.get(Calendar.HOUR_OF_DAY);
+                int min = cal.get(Calendar.MINUTE);
+                int sec = cal.get(Calendar.SECOND);
+                // 设置倒计时文本
+                jClockLabel.setText(String.format("%02d : %02d : %02d", hour, min, sec));
+                if(null != alarmCal && !timeReached) {
+                    int alarmHour = alarmCal.get(Calendar.HOUR_OF_DAY);
+                    int alarmMin = alarmCal.get(Calendar.MINUTE);
+                    if(alarmHour == hour && alarmMin == min) { // 到时间时播放声音
+                        timeReached = true;
+                        System.out.println("Time over");
+                        startAlarm();
+                    }
+                }
+            }
+        }, 0, 1000L); // 每隔1秒刷新倒计时文本
+    }
+	//播放闹钟
+	private void startAlarm() { 
+	    if(null != clip) {
+		jUpLabel.setVisible(true); // jump the "The time is up!"
+		//Todo  add refresh code here about left column
+//		jLabel6.setText("");
+		clip.setFramePosition(0); // let the frame to 0
+		clip.loop(LOOP_COUNT); // start play the video
+	    }
+	}
+	    //停止闹钟
+	private void stopAlarm() { // 停止播放提示音
+	    if(null != clip && clip.isRunning()) {
+		clip.stop(); // 结束播放
+	    }
+	    //Todo SET THE LETTER LABEL
+//	    jLabel6.setText("");
+	    jUpLabel.setVisible(false); // 隐藏顶部提示栏
+	}
+
+	
 	/**
 	 * @param args the command line arguments
 	 */
@@ -673,6 +827,8 @@ public class MeetingFrame extends javax.swing.JFrame {
         // Variables declaration - do not modify                     
         private java.awt.Canvas canvas1;
         private javax.swing.JButton jButton1;
+        private javax.swing.JButton jButton2;
+        private javax.swing.JLabel jClockLabel;
         private javax.swing.JLabel jCountLabel;
         private javax.swing.JComboBox<String> jDay;
         private javax.swing.JButton jDelete;
@@ -692,7 +848,9 @@ public class MeetingFrame extends javax.swing.JFrame {
         private javax.swing.JLabel jLabel16;
         private javax.swing.JLabel jLabel17;
         private javax.swing.JLabel jLabel18;
+        private javax.swing.JLabel jLabel19;
         private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel20;
         private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
@@ -710,11 +868,20 @@ public class MeetingFrame extends javax.swing.JFrame {
         private javax.swing.JScrollPane jScrollPane2;
         private javax.swing.JButton jSearch;
         private javax.swing.JSeparator jSeparator1;
+        private javax.swing.JSeparator jSeparator2;
         private javax.swing.JButton jSubmit;
         private javax.swing.JTable jTable1;
         private javax.swing.JLabel jTimeLabel;
         private javax.swing.JRadioButton jTimeRadio;
+        private javax.swing.JPanel jUpLabel;
         private javax.swing.JComboBox<String> jYear;
         // End of variables declaration                   
 	private String origialString;
+	private static final int LOOP_COUNT = 5;
+	private Timer timer;
+	private Clip clip;
+	private Calendar alarmCal;
+	private boolean timeReached = true;
+	private DateFormat df = new SimpleDateFormat("HH:mm");
+	private String filePath = "test.wav";
 }
