@@ -505,6 +505,7 @@ public class MeetingFrame extends javax.swing.JFrame {
         private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {                                     
                 // TODO add your handling code here:
 		//divide the element to the Textfield sample.
+		jCountLabel.setVisible(false);
 		int[] selectedRows = jTable1.getSelectedRows();
 		if(selectedRows.length == 1){
 			int selectedRow = jTable1.getSelectedRow();
@@ -613,7 +614,9 @@ public class MeetingFrame extends javax.swing.JFrame {
 				}
 				tag = false;
 				tag2 = true;
-			}									
+			}
+			jCountLabel.setText("There are "+count+" records!");
+			jCountLabel.setVisible(true);
 			
 		}
 		
