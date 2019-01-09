@@ -76,6 +76,7 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jLocationRadio = new javax.swing.JRadioButton();
                 jTimeRadio = new javax.swing.JRadioButton();
                 jDurationRadio = new javax.swing.JRadioButton();
+                jCountLabel = new javax.swing.JLabel();
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -95,7 +96,11 @@ public class MeetingFrame extends javax.swing.JFrame {
                                 {null, null, null, null, null},
                                 {null, null, null, null, null},
                                 {null, null, null, null, null},
-                                {null, null, null, null, null}
+                                {"2018-03-21", "12:30", "NanTong", "40", null},
+                                {"2018-03-21", "14:00", "YangZhou", "60", null},
+                                {"2018-03-21", "17:00", "YangZhou", "60", null},
+                                {"2018-03-21", "19:00", "Beijing", "60", null},
+                                {"2018-03-21", "22:00", "NanTong", "60", null}
                         },
                         new String [] {
                                 "Date", "Time", "Location", "Duration", "Description"
@@ -245,6 +250,10 @@ public class MeetingFrame extends javax.swing.JFrame {
                         }
                 });
 
+                jCountLabel.setFont(new java.awt.Font("宋体", 0, 14)); // NOI18N
+                jCountLabel.setForeground(new java.awt.Color(255, 0, 0));
+                jCountLabel.setText("There are n records!");
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
                 getContentPane().setLayout(layout);
                 layout.setHorizontalGroup(
@@ -296,7 +305,7 @@ public class MeetingFrame extends javax.swing.JFrame {
                                                                                                 .addComponent(jSubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                                 .addGap(69, 69, 69)
                                                                                                 .addComponent(jSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                                                .addGap(52, 52, 52)
+                                                                                .addGap(46, 46, 46)
                                                                                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
@@ -343,7 +352,9 @@ public class MeetingFrame extends javax.swing.JFrame {
                                                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(113, 113, 113)
                                                 .addComponent(jLabel17)
-                                                .addContainerGap())))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(27, 27, 27))))
                         .addComponent(jSeparator1)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGap(199, 199, 199)
@@ -359,7 +370,8 @@ public class MeetingFrame extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel16))
+                                        .addComponent(jLabel16)
+                                        .addComponent(jCountLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addGroup(layout.createSequentialGroup()
@@ -435,6 +447,7 @@ public class MeetingFrame extends javax.swing.JFrame {
 
                 jHour.getAccessibleContext().setAccessibleDescription("");
                 jHour.getAccessibleContext().setAccessibleParent(null);
+                jCountLabel.setVisible(false);
 
                 pack();
         }// </editor-fold>                        
@@ -492,24 +505,33 @@ public class MeetingFrame extends javax.swing.JFrame {
         private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {                                     
                 // TODO add your handling code here:
 		//divide the element to the Textfield sample.
-		int selectedRow = jTable1.getSelectedRow();
-		int selectedCol = jTable1.getSelectedColumn();
-		origialString = jTable1.getValueAt(selectedCol, selectedRow).toString();
-		String item = jTable1.getValueAt(selectedRow, 0).toString();
-		Object[] values = item.split("-");
-		jYear.setSelectedItem(values[0]);
-		jMonth.setSelectedItem(values[1]);
-		jDay.setSelectedItem(values[2]);
-		item = jTable1.getValueAt(selectedRow, 1).toString();
-		values = item.split(":");
-		jHour.setValue(Integer.parseInt(values[0].toString()));
-		jMin.setValue(Integer.parseInt(values[1].toString()));
-		item = jTable1.getValueAt(selectedRow, 2).toString();
-		jLocation.setText(item);
-		item = jTable1.getValueAt(selectedRow, 3).toString();
-		jDuration.setValue(Integer.parseInt(item));
-		item = jTable1.getValueAt(selectedRow, 4).toString();
-		jDescriptionTextArea.setText(item);
+		int[] selectedRows = jTable1.getSelectedRows();
+		if(selectedRows.length == 1){
+			int selectedRow = jTable1.getSelectedRow();
+			int selectedCol = jTable1.getSelectedColumn();
+			if(selectedCol == -1 || selectedRow == -1)
+				return;
+			if(jTable1.getValueAt(selectedRow, selectedCol) != null)
+				origialString = jTable1.getValueAt(selectedRow, selectedCol).toString();
+			String item = jTable1.getValueAt(selectedRow, 0).toString();
+			Object[] values = item.split("-");
+			jYear.setSelectedItem(values[0]);
+			jMonth.setSelectedItem(values[1]);
+			jDay.setSelectedItem(values[2]);
+			item = jTable1.getValueAt(selectedRow, 1).toString();
+			values = item.split(":");
+			jHour.setValue(Integer.parseInt(values[0].toString()));
+			jMin.setValue(Integer.parseInt(values[1].toString()));
+			item = jTable1.getValueAt(selectedRow, 2).toString();
+			jLocation.setText(item);
+			item = jTable1.getValueAt(selectedRow, 3).toString();
+			jDuration.setValue(Integer.parseInt(item));
+			if(jTable1.getValueAt(selectedRow, 4) != null)
+			item = jTable1.getValueAt(selectedRow, 4).toString();
+			jDescriptionTextArea.setText(item);
+			origialString = jTable1.getValueAt(selectedRow, selectedCol).toString();
+			System.out.println(origialString);
+		}
 		
         }                                    
 
@@ -519,6 +541,81 @@ public class MeetingFrame extends javax.swing.JFrame {
 	//searchButton
         private void jSearchActionPerformed(java.awt.event.ActionEvent evt) {                                        
                 // TODO add your handling code here:
+		//this vector is used to support multi conditional search
+		Vector<Integer> choosing = new Vector<Integer>();
+		choosing.add(0);
+		if(jTimeRadio.isSelected())
+			choosing.add(1);
+		if(jLocationRadio.isSelected())
+			choosing.add(2);
+		if(jDurationRadio.isSelected())
+			choosing.add(3);
+//		System.out.println(choosing.size());
+		String year = jYear.getSelectedItem().toString();
+		String month = jMonth.getSelectedItem().toString();
+		String day = jDay.getSelectedItem().toString();
+		String data = year + "-"+ month + "-" + day; //the first key
+//		Integer hour = Integer.parseInt((String) jHour.getValue());
+		int hour = Integer.parseInt(jHour.getValue().toString());
+		String timep1 = String.format("%02d", hour);
+		int min = Integer.parseInt(jMin.getValue().toString());
+		String timep2 = String.format("%02d", min);
+		String time = timep1+":"+timep2; //the second key.
+		String location = jLocation.getText();
+		String duration = jDuration.getValue().toString();
+		Vector<Vector> dataVector = ((DefaultTableModel)jTable1.getModel()).getDataVector();
+		//count is used to jump
+		jTable1.clearSelection();
+		boolean tag = false;
+		boolean tag2 = true;
+		int count = 0;
+		//row traverse
+		for(int i = 0; i < dataVector.size(); i++){
+			//if there has matched record.
+			if (String.valueOf(dataVector.elementAt(i).get(0)).equalsIgnoreCase(data)){
+				tag = true;
+				if (choosing.size() > 1){
+					for(Integer in : choosing){
+						
+//						if (in.equals(1)&& !String.valueOf(dataVector.elementAt(i).get(1)).equalsIgnoreCase(time)) tag = false;
+//						if (in.equals(2)&& !String.valueOf(dataVector.elementAt(i).get(2)).equalsIgnoreCase(location)) tag = false;
+//						if (in.equals(3)&& !String.valueOf(dataVector.elementAt(i).get(3)).equalsIgnoreCase(duration)) tag = false;
+						if (in == 1){
+							System.out.println("time");
+							System.out.println(time);
+							System.out.println(dataVector.elementAt(i).get(1).toString());
+							if(!String.valueOf(dataVector.elementAt(i).get(1)).equalsIgnoreCase(time))tag2 = false;
+						}
+						if (in == 2){
+							System.out.println("Location");
+							if(!String.valueOf(dataVector.elementAt(i).get(2)).equalsIgnoreCase(location)) tag2 = false;
+						}
+						if(in == 3){
+							System.out.println("Duration");
+							if(!String.valueOf(dataVector.elementAt(i).get(3)).equalsIgnoreCase(duration)) tag2 = false;
+						}
+					} 
+				}else {
+					tag = true;					
+				}
+				
+				System.out.println(tag2);
+				if(tag == true && tag2 == true){
+					count += 1;
+					jTable1.addRowSelectionInterval(i, i);				
+				}
+				
+				if (count == 1){
+					Rectangle rect = jTable1.getCellRect(i, 0, true);
+					jTable1.scrollRectToVisible(rect);
+//					System.out.println(count);
+//					return;
+				}
+				tag = false;
+				tag2 = true;
+			}									
+			
+		}
 		
 		
         }                                       
@@ -573,6 +670,7 @@ public class MeetingFrame extends javax.swing.JFrame {
         // Variables declaration - do not modify                     
         private java.awt.Canvas canvas1;
         private javax.swing.JButton jButton1;
+        private javax.swing.JLabel jCountLabel;
         private javax.swing.JComboBox<String> jDay;
         private javax.swing.JButton jDelete;
         private javax.swing.JLabel jDescriptionLabel;
