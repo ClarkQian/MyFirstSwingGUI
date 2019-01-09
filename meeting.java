@@ -216,22 +216,21 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jLabel11.setText("At");
 
                 jLocationLabel.setForeground(new java.awt.Color(153, 0, 255));
-                jLocationLabel.setText("29#633");
 
                 jLabel12.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 jLabel12.setText("On");
 
                 jTimeLabel.setForeground(new java.awt.Color(255, 51, 51));
-                jTimeLabel.setText("14:20");
 
                 jLabel13.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 jLabel13.setText("Last");
 
                 jDurationLabel.setForeground(new java.awt.Color(0, 102, 51));
-                jDurationLabel.setText("360");
 
                 jLabel14.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 jLabel14.setText("min");
+
+                jProgressBar.setIndeterminate(true);
 
                 jLabel15.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
                 jLabel15.setText("Process:");
@@ -289,6 +288,11 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jLabel20.setText("The time is up!");
 
                 jButton2.setText("OK");
+                jButton2.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                jButton2ActionPerformed(evt);
+                        }
+                });
 
                 javax.swing.GroupLayout jUpLabelLayout = new javax.swing.GroupLayout(jUpLabel);
                 jUpLabel.setLayout(jUpLabelLayout);
@@ -714,6 +718,44 @@ public class MeetingFrame extends javax.swing.JFrame {
         private void jDurationRadioActionPerformed(java.awt.event.ActionEvent evt) {                                               
                 // TODO add your handling code here:		
         }                                              
+
+        private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+                // TODO add your handling code here:
+		Vector<Vector> dataVector = ((DefaultTableModel)jTable1.getModel()).getDataVector();
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH)+1;
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		String tm = String.format("%d-%02d-%02d", year, month, day);
+		for(int i = 0; i < dataVector.size(); i++){
+			if(String.valueOf(dataVector.elementAt(i).get(0)).equals(tm)){
+				boolean tag = true;
+				if (hasVector.size() > 0){
+
+					for(int j = 0; j < hasVector.size(); j++){
+						if(String.valueOf(dataVector.elementAt(i).get(1)).equals(String.valueOf(dataVector.elementAt(i).get(1))))
+							tag = false;
+					}
+				}
+				if (tag == false) continue;
+				String time = String.valueOf(dataVector.elementAt(i).get(1));
+				String []timePart = time.split(":");
+				int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+				int hour = Integer.parseInt(timePart[0]);
+				if(currentHour < hour){
+					jTimeLabel.setText(String.valueOf(dataVector.elementAt(i).get(1)));
+					jLocationLabel.setText(String.valueOf(dataVector.elementAt(i).get(2)));
+					jDurationLabel.setText(String.valueOf(dataVector.elementAt(i).get(3)));
+					int percent = currentHour*100/hour;
+					jProgressBar.setIndeterminate(false);
+					jProgressBar.setValue(percent);
+					hasVector.add(dataVector.elementAt(i));
+					timeReached = false;
+					break;
+					}
+			}
+		}
+        }                                        
     public void initVideo(){
         try { // 初始化闹钟声音
             // only support wav
@@ -744,6 +786,33 @@ public class MeetingFrame extends javax.swing.JFrame {
 
     }
     public void initTimer(){
+	    //初始化边栏包括进度条
+	Vector<Vector> dataVector = ((DefaultTableModel)jTable1.getModel()).getDataVector();
+	Calendar cal = Calendar.getInstance();
+	int year = cal.get(Calendar.YEAR);
+	int month = cal.get(Calendar.MONTH)+1;
+	int day = cal.get(Calendar.DAY_OF_MONTH);
+	String tm = String.format("%d-%02d-%02d", year, month, day);
+	for(int i = 0; i < dataVector.size(); i++){
+		if(String.valueOf(dataVector.elementAt(i).get(0)).equals(tm) ){
+			String time = String.valueOf(dataVector.elementAt(i).get(1));
+			String []timePart = time.split(":");
+			int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+			int hour = Integer.parseInt(timePart[0]);
+			if(currentHour < hour){
+				jTimeLabel.setText(String.valueOf(dataVector.elementAt(i).get(1)));
+				jLocationLabel.setText(String.valueOf(dataVector.elementAt(i).get(2)));
+				jDurationLabel.setText(String.valueOf(dataVector.elementAt(i).get(3)));
+				int percent = currentHour*100/hour;
+				jProgressBar.setIndeterminate(false);
+				jProgressBar.setValue(percent);
+				hasVector.add(dataVector.elementAt(i));
+				timeReached = false;
+				break;
+				}
+		}
+	}
+	    
         timer = new Timer(); // 初始化倒计时任务
         // 开始倒计时
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -884,4 +953,5 @@ public class MeetingFrame extends javax.swing.JFrame {
 	private boolean timeReached = true;
 	private DateFormat df = new SimpleDateFormat("HH:mm");
 	private String filePath = "test.wav";
+	private Vector<Vector> hasVector;
 }
