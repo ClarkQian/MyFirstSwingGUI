@@ -107,8 +107,9 @@ public class MeetingFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                //TODO inital
                 new Object [][] {
-                        {"2019-01-10", "12:30", "NanTong", "40", "Important meeting"},
+                        {"2019-01-10", "5:21", "NanTong", "40", "Important meeting"},
                         {"2018-02-10", "11:30", "NanTong", "50", "yes"},
                         {"2018-02-11", "9:30", "Yangzhout", "10", "no"},
                         {"2018-02-12", "21:30", "nanjing", "20", "ok"},
@@ -524,6 +525,7 @@ public class MeetingFrame extends javax.swing.JFrame {
         jUpLabel.setVisible(false);
 
         pack();
+        this.setLocationRelativeTo(null);
     }// </editor-fold>
 
     private void jDayActionPerformed(java.awt.event.ActionEvent evt) {
@@ -605,7 +607,6 @@ public class MeetingFrame extends javax.swing.JFrame {
                 item = jTable1.getValueAt(selectedRow, 4).toString();
             jDescriptionTextArea.setText(item);
             origialString = jTable1.getValueAt(selectedRow, selectedCol).toString();
-            System.out.println(origialString);
         }
 
     }
@@ -656,17 +657,12 @@ public class MeetingFrame extends javax.swing.JFrame {
 //						if (in.equals(2)&& !String.valueOf(dataVector.elementAt(i).get(2)).equalsIgnoreCase(location)) tag = false;
 //						if (in.equals(3)&& !String.valueOf(dataVector.elementAt(i).get(3)).equalsIgnoreCase(duration)) tag = false;
                         if (in == 1){
-                            System.out.println("time");
-                            System.out.println(time);
-                            System.out.println(dataVector.elementAt(i).get(1).toString());
                             if(!String.valueOf(dataVector.elementAt(i).get(1)).equalsIgnoreCase(time))tag2 = false;
                         }
                         if (in == 2){
-                            System.out.println("Location");
                             if(!String.valueOf(dataVector.elementAt(i).get(2)).equalsIgnoreCase(location)) tag2 = false;
                         }
                         if(in == 3){
-                            System.out.println("Duration");
                             if(!String.valueOf(dataVector.elementAt(i).get(3)).equalsIgnoreCase(duration)) tag2 = false;
                         }
                     }
@@ -674,7 +670,6 @@ public class MeetingFrame extends javax.swing.JFrame {
                     tag = true;
                 }
 
-                System.out.println(tag2);
                 if(tag == true && tag2 == true){
                     count += 1;
                     jTable1.addRowSelectionInterval(i, i);
@@ -730,8 +725,10 @@ public class MeetingFrame extends javax.swing.JFrame {
                 String time = String.valueOf(dataVector.elementAt(i).get(1));
                 String []timePart = time.split(":");
                 int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+                int currentMin = cal.get(Calendar.MINUTE);
                 int hour = Integer.parseInt(timePart[0]);
-                if(currentHour < hour){
+                int min = Integer.parseInt(timePart[1]);
+                if(currentHour <= hour && currentMin <= min){
                     jTimeLabel.setText(String.valueOf(dataVector.elementAt(i).get(1)));
                     jLocationLabel.setText(String.valueOf(dataVector.elementAt(i).get(2)));
                     jDurationLabel.setText(String.valueOf(dataVector.elementAt(i).get(3)));
@@ -741,6 +738,9 @@ public class MeetingFrame extends javax.swing.JFrame {
                     jProgressBar.setValue(percent);
                     hasTime.add(String.valueOf(dataVector.elementAt(i).get(1)));
                     timeReached = false;
+                    alarmCal = Calendar.getInstance();
+                    alarmCal.set(Calendar.HOUR_OF_DAY, hour);
+                    alarmCal.set(Calendar.MINUTE, min);
                     return;
                 }
             }
@@ -751,9 +751,12 @@ public class MeetingFrame extends javax.swing.JFrame {
         jProgressBar.setIndeterminate(true);
     }
 
+    //TODO cancel
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         initColck();
+        alarmCal = null;
+        jUpLabel.setVisible(false);
     }
     public void initVideo(){
         try { // 初始化闹钟声音
@@ -798,18 +801,23 @@ public class MeetingFrame extends javax.swing.JFrame {
                 String time = String.valueOf(dataVector.elementAt(i).get(1));
                 String []timePart = time.split(":");
                 int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+                int currentMin = cal.get(Calendar.MINUTE);
                 int hour = Integer.parseInt(timePart[0]);
-                System.out.println(hour);
-                if(currentHour < hour){
+                int min = Integer.parseInt(timePart[1]);
+                if(currentHour <= hour && currentMin <= min){
                     jTimeLabel.setText(String.valueOf(dataVector.elementAt(i).get(1)));
                     jLocationLabel.setText(String.valueOf(dataVector.elementAt(i).get(2)));
                     jDurationLabel.setText(String.valueOf(dataVector.elementAt(i).get(3)));
+                    jDescriptionLabel.setText(String.valueOf(dataVector.elementAt(i).get(4)));
                     int percent = currentHour*100/hour;
                     jProgressBar.setIndeterminate(false);
                     jProgressBar.setValue(percent);
 
                     hasTime.add(String.valueOf(dataVector.elementAt(i).get(1)));
                     timeReached = false;
+                    alarmCal = Calendar.getInstance();
+                    alarmCal.set(Calendar.HOUR_OF_DAY, hour);
+                    alarmCal.set(Calendar.MINUTE, min);
                     break;
                 }
             }
@@ -835,6 +843,10 @@ public class MeetingFrame extends javax.swing.JFrame {
                         System.out.println("Time over");
                         startAlarm();
                     }
+
+                }
+                if(alarmCal == null){
+                    initColck();
                 }
             }
         }, 0, 1000L); // 每隔1秒刷新倒计时文本
@@ -856,6 +868,7 @@ public class MeetingFrame extends javax.swing.JFrame {
         }
         //Todo SET THE LETTER LABEL
 //	    jLabel6.setText("");
+        initColck();
         jUpLabel.setVisible(false); // 隐藏顶部提示栏
     }
 
@@ -951,7 +964,7 @@ public class MeetingFrame extends javax.swing.JFrame {
     private static final int LOOP_COUNT = 5;
     private Timer timer;
     private Clip clip;
-    private Calendar alarmCal;
+    private Calendar alarmCal = null;
     private boolean timeReached = true;
     private DateFormat df = new SimpleDateFormat("HH:mm");
     private String filePath = "test.wav";
