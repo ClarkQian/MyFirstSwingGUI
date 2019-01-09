@@ -1,11 +1,13 @@
+package com.frame;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com;
 
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,6 +16,8 @@ import java.util.Vector;
 import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -21,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -174,12 +179,22 @@ public class MeetingFrame extends javax.swing.JFrame {
         jLabel8.setText("Location:");
 
         jLocation.setText("jTextField1");
+        jLocation.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jLocationKeyPressed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel9.setText("Description:");
 
         jDescriptionTextArea.setColumns(20);
         jDescriptionTextArea.setRows(5);
+        jDescriptionTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jDescriptionTextAreaKeyPressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(jDescriptionTextArea);
 
         jSubmit.setText("Submit");
@@ -253,6 +268,15 @@ public class MeetingFrame extends javax.swing.JFrame {
                 jLocationRadioActionPerformed(evt);
             }
         });
+
+        ((DefaultTableModel)jTable1.getModel()).addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                jTable1tableChanged(e);
+            }
+        });
+
+
 
         jTimeRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -549,6 +573,40 @@ public class MeetingFrame extends javax.swing.JFrame {
         String year = jYear.getSelectedItem().toString();
         String month = jMonth.getSelectedItem().toString();
         String day = jDay.getSelectedItem().toString();
+        int yea = Integer.parseInt(year);
+        //judge about the month!
+        if( month == "02") {
+            System.out.println("yes");
+            if (yea % 4 == 0 && yea % 100 != 0) {
+                if (day == "30" || day == "31") {
+                    JOptionPane.showMessageDialog(this, "There are 29 days in February in leap year!", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else {
+                if (day == "30" || day == "31" || day == "29") {
+                    JOptionPane.showMessageDialog(this, "There are 28 days in February in leap year!", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+        if(month == "04"){
+            if(day == "31")JOptionPane.showMessageDialog(this,"There are 30 days in April!","Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(month == "06"){
+            if(day == "31")JOptionPane.showMessageDialog(this,"There are 30 days in June!","Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(month == "09"){
+            if(day  == "31")JOptionPane.showMessageDialog(this,"There are 30 days in September!","Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(month == "11"){
+            if(day  == "31")JOptionPane.showMessageDialog(this,"There are 30 days in December!","Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
         String data = year + "-"+ month + "-" + day; //the first key
 //		Integer hour = Integer.parseInt((String) jHour.getValue());
         int hour = Integer.parseInt(jHour.getValue().toString());
@@ -757,7 +815,21 @@ public class MeetingFrame extends javax.swing.JFrame {
         initColck();
         alarmCal = null;
         jUpLabel.setVisible(false);
+        stopAlarm();
     }
+    private void jLocationKeyPressed(KeyEvent evt) {
+        // TODO add your handling code here:
+        if(evt.getKeyChar() == KeyEvent.VK_ENTER){
+            jSubmit.doClick();
+        }
+    }
+    private void jDescriptionTextAreaKeyPressed(java.awt.event.KeyEvent evt) {
+        // TODO add your handling code here:
+        if(evt.getKeyChar() == KeyEvent.VK_ENTER && evt.isShiftDown()){
+            jSubmit.doClick();
+        }
+    }
+
     public void initVideo(){
         try { // 初始化闹钟声音
             // only support wav
@@ -872,7 +944,51 @@ public class MeetingFrame extends javax.swing.JFrame {
         jUpLabel.setVisible(false); // 隐藏顶部提示栏
     }
 
-
+    private boolean isDate(String date){
+        String pattern = "^((\\d{2}(([02468][048])|([13579][26]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|(1[0-9])|(2[0-8]))))))?$";
+        if(Pattern.matches(pattern, date))
+            return true;
+        return false;
+    }
+    private boolean isTime(String time){
+        String pattern = "^(20|21|22|23|[0-1]\\d):[0-5]\\d";
+        if (Pattern.matches(pattern, time))
+            return true;
+        return false;
+    }
+    private void jTable1tableChanged(TableModelEvent evt){
+        int type = evt.getType();
+        int row = evt.getFirstRow();
+        int col = evt.getColumn();
+        if(col == 0 && jTable1.getValueAt(row, col).equals("")){
+            JOptionPane.showMessageDialog(this, "Please enter the Date", "ERROR", JOptionPane.ERROR_MESSAGE);
+            jTable1.setValueAt(origialString, row, col);
+        }
+        if(col == 1 && jTable1.getValueAt(row, col).equals("")){
+            JOptionPane.showMessageDialog(this, "Please enter the Time", "ERROR", JOptionPane.ERROR_MESSAGE);
+            jTable1.setValueAt(origialString, row, col);
+        }
+        //if the element is illegal then change back to the orginal element
+        if(col == 0 && isDate(jTable1.getValueAt(row, col).toString()) == false){
+            JOptionPane.showMessageDialog(this, "Please check the date! Like xxxx-xx-xx format and the number is right.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            jTable1.setValueAt(origialString, row, col);
+        }
+        if(col == 1 && isTime(jTable1.getValueAt(row, col).toString()) == false) {
+            JOptionPane.showMessageDialog(this, "Please check the time! like xx:xx format and the number is right.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            jTable1.setValueAt(origialString, row, col);
+        }
+        if(col == 3 && isDuration(jTable1.getValueAt(row, col).toString()) == false) {
+            JOptionPane.showMessageDialog(this, "Please check the duration, make sure it is integer.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            jTable1.setValueAt(origialString, row, col);
+        }
+        //TODO Add the database and file editor code here.
+    }
+    private boolean isDuration(String duration){
+        String pattern = "^[1-9]\\d*$";
+        if(Pattern.matches(pattern, duration))
+            return true;
+        return false;
+    }
     /**
      * @param args the command line arguments
      */
@@ -967,6 +1083,7 @@ public class MeetingFrame extends javax.swing.JFrame {
     private Calendar alarmCal = null;
     private boolean timeReached = true;
     private DateFormat df = new SimpleDateFormat("HH:mm");
-    private String filePath = "test.wav";
+    private String filePath = "../config/test.wav";
     private Vector<String> hasTime = new Vector<>();
 }
+
